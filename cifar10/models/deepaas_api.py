@@ -1,13 +1,21 @@
+
 # -*- coding: utf-8 -*-
 """
 Model description
 """
 
+import base64
+import matplotlib
+import numpy
+import urllib.request
 import argparse
 import pkg_resources
+
 # import project's config.py
 import cifar10.config as cfg
 
+from keras.preprocessing import image
+from cifar10.models.cifar10_model  import train_nn, predict_nn
 
 def get_metadata():
     """
@@ -18,13 +26,13 @@ def get_metadata():
 
     pkg = pkg_resources.get_distribution(module[0])
     meta = {
-        'Name': None,
-        'Version': None,
-        'Summary': None,
+        'Name': "cifar10",
+        'Version': "1.0.0",
+        'Summary': "This is a simple implementation of cifar10 in keras",
         'Home-page': None,
-        'Author': None,
-        'Author-email': None,
-        'License': None,
+        'Author': "Lara Lloret Iglesias",
+        'Author-email': "lloret@ifca.unican.es",
+        'License': "MIT",
     }
 
     for line in pkg.get_metadata_lines("PKG-INFO"):
@@ -40,22 +48,30 @@ def predict_file(*args):
     """
     Function to make prediction on a local file
     """
-    message = 'Not implemented in the model (predict_file)'
-    return message
 
 
 def predict_data(*args):
     """
     Function to make prediction on an uploaded file
     """
-    message = 'Not implemented in the model (predict_data)'
+
+    thefile= args[0]['files']
+    thename= thefile.filename
+    thepath= "/tmp/"+thename
+    thefile.save(thepath)
+    img = image.load_img(thepath, target_size=(32,32))
+    x= image.img_to_array(img)
+    message=predict_nn(x)
     return message
+
 
 
 def predict_url(*args):
     """
     Function to make prediction on a URL
     """
+    print("aqui estoy imprimiendo args : ", args)
+    urllib.request.urlretrieve(args[0], 'image.jpg')
     message = 'Not implemented in the model (predict_url)'
     return message
 
@@ -73,8 +89,9 @@ def train(train_args):
         Json dict with the user's configuration parameters.
         Can be loaded with json.loads() or with yaml.safe_load()    
     """
-
-    run_results = { "status": "Not implemented in the model (train)",
+    train_nn(train_args['epochs'], train_args['lrate'],train_args['outputpath'])
+   
+    run_results = { "status": "SUCCESS",
                     "train_args": [],
                     "training": [],
                   }
@@ -93,16 +110,15 @@ def get_train_args():
 
     # convert default values and possible 'choices' into strings
     for key, val in train_args.items():
-        val['default'] = str(val['default']) #yaml.safe_dump(val['default']) #json.dumps(val['default'])
-        if 'choices' in val:
-            val['choices'] = [str(item) for item in val['choices']]
+       val['default'] = str(val['default']) #yaml.safe_dump(val['default']) #json.dumps(val['default'])
+       if 'choices' in val:
+           val['choices'] = [str(item) for item in val['choices']]
 
     return train_args
 
 # !!! deepaas>=0.5.0 calls get_test_args() to get args for 'predict'
 def get_test_args():
     predict_args = cfg.predict_args
-
     # convert default values and possible 'choices' into strings
     for key, val in predict_args.items():
         val['default'] = str(val['default'])  # yaml.safe_dump(val['default']) #json.dumps(val['default'])
@@ -119,9 +135,9 @@ def main():
        Runs above-described functions depending on input parameters
        (see below an example)
     """
-
+    print("Hola")
     if args.method == 'get_metadata':
-        get_metadata()       
+        get_metadata()
     elif args.method == 'train':
         train(args)
     else:

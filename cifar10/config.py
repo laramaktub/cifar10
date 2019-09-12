@@ -25,9 +25,21 @@ BASE_DIR = path.dirname(path.normpath(path.dirname(__file__)))
 #             },
 # ...
 # }
-train_args = { 'arg1': {'default': 1,
-                        'help': '',
-                        'required': False
+train_args = { 'epochs': {'default': 1,
+                        'help': 'Number of epochs',
+                        'required': True,
+                        'type': int
+                        },
+
+               'lrate': {'default':0.001,
+                         'help': 'Initial learning rate value',
+                         'required': True,
+                         'type': float
+                        },
+
+               'outputpath': {'default': ".",
+                         'help': 'Path for saving the model',
+                         'required': True
                         },
 }
 
