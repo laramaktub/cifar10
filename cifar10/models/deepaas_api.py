@@ -135,7 +135,6 @@ def main():
        Runs above-described functions depending on input parameters
        (see below an example)
     """
-    print("Hola")
     if args.method == 'get_metadata':
         get_metadata()
     elif args.method == 'train':
