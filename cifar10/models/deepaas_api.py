@@ -26,13 +26,13 @@ def get_metadata():
 
     pkg = pkg_resources.get_distribution(module[0])
     meta = {
-        'Name': "cifar10",
-        'Version': "1.0.0",
-        'Summary': "This is a simple implementation of cifar10 in keras",
+        'Name': None,
+        'Version': None,
+        'Summary': None,
         'Home-page': None,
         'Author': "Lara Lloret Iglesias",
-        'Author-email': "lloret@ifca.unican.es",
-        'License': "MIT",
+        'Author-email': None,
+        'License': None,
     }
 
     for line in pkg.get_metadata_lines("PKG-INFO"):
