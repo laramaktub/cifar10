@@ -46,7 +46,6 @@ def train_nn(epochs, lrate, outputpath):
 
     # Create the model
 
-# Create the model
     model = Sequential()
     model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=(3, 32, 32)))
     model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
