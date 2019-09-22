@@ -54,8 +54,7 @@ def predict_data(*args):
     """
     Function to make prediction on an uploaded file
     """
-
-    thefile= args[0]['files']
+    thefile= args[0]['files'][0]
     thename= thefile.filename
     thepath= "/tmp/"+thename
     thefile.save(thepath)

@@ -45,21 +45,27 @@ def train_nn(epochs, lrate, outputpath):
     print("We are running on %i classes" % num_classes)
 
     # Create the model
+
+# Create the model
     model = Sequential()
     model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=(3, 32, 32)))
     model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D((2, 2)))
     model.add(Dropout(0.2))
     model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
     model.add(Conv2D(64, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D((2, 2)))
     model.add(Dropout(0.2))
     model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
     model.add(Conv2D(128, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same'))
+    model.add(BatchNormalization())
     model.add(MaxPooling2D((2, 2)))
     model.add(Dropout(0.2))
     model.add(Flatten())
     model.add(Dense(128, activation='relu', kernel_initializer='he_uniform'))
+    model.add(BatchNormalization())
     model.add(Dropout(0.2))
     model.add(Dense(10, activation='softmax'))
 
@@ -69,8 +75,12 @@ def train_nn(epochs, lrate, outputpath):
     print(model.summary())
 
 
+    #Take only a certain number of samples
+    nsamples=500
+    X_train=X_train[:nsamples,:,:,:]
+    y_train=y_train[:nsamples,:]
     # Fit the model
-    model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=epochs, batch_size=64)
+    model.fit(X_train, y_train, validation_split=0.1, epochs=epochs, batch_size=64)
 
     #Evaluate the model on the test dataset
     scores = model.evaluate(X_test, y_test, verbose=10)
@@ -81,11 +91,31 @@ def train_nn(epochs, lrate, outputpath):
 
 def predict_nn(image):
     K.clear_session()
-    model=load_model("model.h5")
-    image = numpy.expand_dims(image, axis=0)
-    index_prediction=numpy.argmax(model.predict(image))
-    message= "The image is a " + labels[index_prediction]
-    if labels[index_prediction]=="airplane" or labels[index_prediction]=="automobile":
-        message= "The image is an " + labels[index_prediction]
+    #We load the model we have just trained
+    model=load_model(os.path.join(outputpath, "model.h5"))
+
+    #Expand the dimensions of the image to match the network architecture
+    if K.image_data_format() == 'channels_first':
+        image = image.reshape((1, 3, 32, 32))
+    else:
+        image = image.reshape((1, 32, 32, 3))
+
+
+    predicted_vector = model.predict(image)
+    # return 5 best predictions
+    idxs = numpy.argsort(predicted_vector[0])[::-1][:5] 
+    probs_best = []
+    print("Top 5 predictions:")
+    for i in idxs:
+        print("{0:10s} :  {1:5.4f}".format(labels[i], predicted_vector[0][i]))
+
+    # Print the prediction
+    label_best = labels[idxs[0]]
+    message= "The image is a " + label_best
+    if label_best=="airplane" or label_best=="automobile":
+        message= "The image is an " + label_best
+
+    print()
+    print(message)
 
     return message
