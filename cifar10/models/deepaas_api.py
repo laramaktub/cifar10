@@ -54,13 +54,14 @@ def predict_data(*args):
     """
     Function to make prediction on an uploaded file
     """
+    outputpath=args[0]["outputpath"]
     thefile= args[0]['files'][0]
     thename= thefile.filename
-    thepath= "/tmp/"+thename
+    thepath= outputpath + "/" +thename
     thefile.save(thepath)
     img = image.load_img(thepath, target_size=(32,32))
     x= image.img_to_array(img)
-    message=predict_nn(x)
+    message=predict_nn(x,outputpath)
     return message
 
 

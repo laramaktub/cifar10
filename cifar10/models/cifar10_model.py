@@ -76,9 +76,13 @@ def train_nn(epochs, lrate, outputpath):
 
 
     #Take only a certain number of samples
-    nsamples=500
+    nsamples=5000
     X_train=X_train[:nsamples,:,:,:]
     y_train=y_train[:nsamples,:]
+    #Test only on a fraction
+    nsamplestest=1000
+    X_test=X_train[:nsamplestest,:,:,:]
+    y_test=y_test[:nsamplestest,:]
     # Fit the model
     model.fit(X_train, y_train, validation_split=0.1, epochs=epochs, batch_size=64)
 
@@ -89,8 +93,9 @@ def train_nn(epochs, lrate, outputpath):
     #Save the model
     model.save(os.path.join(outputpath,"model.h5"))
 
-def predict_nn(image):
+def predict_nn(image,outputpath):
     K.clear_session()
+
     #We load the model we have just trained
     model=load_model(os.path.join(outputpath, "model.h5"))
 
