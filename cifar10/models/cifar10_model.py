@@ -79,7 +79,7 @@ def train_nn(epochs, lrate, outputpath):
     X_train=X_train[:nsamples,:,:,:]
     y_train=y_train[:nsamples,:]
     #Test only on a fraction
-    nsamplestest=1000
+    nsamplestest=4000
     X_test=X_train[:nsamplestest,:,:,:]
     y_test=y_test[:nsamplestest,:]
     # Fit the model
