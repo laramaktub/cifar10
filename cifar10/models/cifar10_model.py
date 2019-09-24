@@ -13,6 +13,7 @@ from keras.layers import BatchNormalization
 from keras.utils import np_utils
 from keras import backend as K
 from keras.models import load_model
+from keras import regularizers
 import tensorflow as tf
 K.set_image_dim_ordering('th')
 
@@ -63,31 +64,31 @@ def train_nn(epochs, lrate, outputpath):
     model.add(MaxPooling2D((2, 2)))
     model.add(Dropout(0.2))
     model.add(Flatten())
-    model.add(Dense(128, activation='relu', kernel_initializer='he_uniform'))
+    model.add(Dense(128, activation='relu', kernel_initializer='he_uniform', kernel_regularizer=regularizers.l2(0.001)))
     model.add(BatchNormalization())
     model.add(Dropout(0.2))
-    model.add(Dense(10, activation='softmax'))
+    model.add(Dense(10, activation='softmax',kernel_regularizer=regularizers.l2(0.001)))
 
     # Compile model
-    sgd = SGD(lr=lrate, momentum=0.9, decay=decay, nesterov=False)
-    model.compile(loss='categorical_crossentropy', optimizer=sgd, metrics=['accuracy'])
+    #sgd = SGD(lr=lrate, momentum=0.9, decay=decay, nesterov=False)
+    model.compile(loss='categorical_crossentropy', optimizer="rmsprop", metrics=['accuracy'])
     print(model.summary())
 
 
     #Take only a certain number of samples
-    nsamples=5000
+    nsamples=15000
     X_train=X_train[:nsamples,:,:,:]
     y_train=y_train[:nsamples,:]
     #Test only on a fraction
-    nsamplestest=4000
-    X_test=X_train[:nsamplestest,:,:,:]
-    y_test=y_test[:nsamplestest,:]
+    nsamplestest=2000
+    #X_test=X_train[:nsamplestest,:,:,:]
+    #y_test=y_test[:nsamplestest,:]
     # Fit the model
-    model.fit(X_train, y_train, validation_split=0.1, epochs=epochs, batch_size=64)
+    model.fit(X_train, y_train, validation_split=0.1,shuffle=True, epochs=epochs, batch_size=64)
 
     #Evaluate the model on the test dataset
     scores = model.evaluate(X_test, y_test, verbose=10)
-    #print("Accuracy: %.2f%%" % (scores[1]*100))
+    print("Accuracy: %.2f%%" % (scores[1]*100))
 
     #Save the model
     model.save(os.path.join(outputpath,"model.h5"))
