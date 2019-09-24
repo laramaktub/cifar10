@@ -87,7 +87,7 @@ def train_nn(epochs, lrate, outputpath):
 
     #Evaluate the model on the test dataset
     scores = model.evaluate(X_test, y_test, verbose=10)
-    print("Accuracy: %.2f%%" % (scores[1]*100))
+    #print("Accuracy: %.2f%%" % (scores[1]*100))
 
     #Save the model
     model.save(os.path.join(outputpath,"model.h5"))
