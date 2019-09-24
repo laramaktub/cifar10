@@ -70,17 +70,19 @@ def train_nn(epochs, lrate, outputpath):
     model.add(Dense(10, activation='softmax',kernel_regularizer=regularizers.l2(0.001)))
 
     # Compile model
+    #sgd = SGD(lr=lrate, momentum=0.9, decay=decay, nesterov=False)
     model.compile(loss='categorical_crossentropy', optimizer="rmsprop", metrics=['accuracy'])
     print(model.summary())
 
 
     #Take only a certain number of samples
-    nsamples=15000
+    nsamples=12000
     X_train=X_train[:nsamples,:,:,:]
     y_train=y_train[:nsamples,:]
     #Test only on a fraction
     nsamplestest=2000
-
+    #X_test=X_train[:nsamplestest,:,:,:]
+    #y_test=y_test[:nsamplestest,:]
     # Fit the model
     model.fit(X_train, y_train, validation_split=0.1,shuffle=True, epochs=epochs, batch_size=64)
 
